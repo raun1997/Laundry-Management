@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config >
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">https://sheets.googleapis.com/v4/spreadsheets/1myN4i5Nu7oTZqm9CrOyT4O7aQjJ7f8AcucQ1-MnmU4w/values/Sheet1!A1:I100?key=AIzaSyAtB0JJF5JEcr3gCW6W_wz2AHgtBYhGBmk</domain>
+    </domain-config>
+</network-security-config>
