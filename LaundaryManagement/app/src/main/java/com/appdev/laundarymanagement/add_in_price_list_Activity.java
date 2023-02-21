@@ -1,5 +1,7 @@
 package com.appdev.laundarymanagement;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,15 +9,19 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
@@ -48,6 +54,8 @@ public class add_in_price_list_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_in_price_list);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         particular=findViewById(R.id.partiicularet);
         unit=findViewById(R.id.unitet);
         rate=findViewById(R.id.rateet);
@@ -72,18 +80,21 @@ public class add_in_price_list_Activity extends AppCompatActivity {
                     particular.setError(null);
                 }
                 else{
-                    try{
-                        r1=Double.parseDouble(r);
-                        particular.setError(null);
-                        unit.setError(null);
-                        rate.setError(null);
+                    particular.setError(null);
+                    unit.setError(null);
+                    rate.setError(null);
+                    createSheetsService();
+                    ValueRange body = new ValueRange()
+                                .setValues(Arrays.asList(
+                                        Arrays.asList(p,u,r)
+                                ));
+                    appendDataToSheet(body);
+                    Intent intent=new Intent(add_in_price_list_Activity.this,PricelistActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    finish();
                     }
-                    catch (Exception ex){
-                        rate.setError("Invalid Input");
-                    }
-
                 }
-            }
         });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +106,41 @@ public class add_in_price_list_Activity extends AppCompatActivity {
             }
         });
     }
+    private Sheets sheetsService;
+
+    private void createSheetsService() {
+        HttpTransport transport = AndroidHttp.newCompatibleTransport();
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+        GoogleCredential credential = null;
+        try {
+            InputStream inputStream = getResources().getAssets().open("laundry-management-377814-045b05e9b598.json");
+            credential = GoogleCredential.fromStream(inputStream, transport, jsonFactory)
+                    .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sheetsService = new Sheets.Builder(transport, jsonFactory, credential)
+                .setApplicationName("Laundry Management")
+                .build();
+    }
+    private static final String SPREADSHEET_ID = "1myN4i5Nu7oTZqm9CrOyT4O7aQjJ7f8AcucQ1-MnmU4w";
+    private static final String RANGE = "Sheet2!A:C";
+
+    private void appendDataToSheet(ValueRange body) {
+        try {
+            AppendValuesResponse result = sheetsService.spreadsheets().values()
+                    .append(SPREADSHEET_ID, RANGE, body)
+                    .setValueInputOption("USER_ENTERED")
+                    .execute();
+            Log.d(TAG, "Append result: " + result);
+            Toast.makeText(this, "Data added Successfully", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Unable to send data", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+
 //    Particular particular1 = new Particular(p,u,r,String.valueOf(index));
 //    public void writedata() {
 //        HttpTransport httpTransport = null;

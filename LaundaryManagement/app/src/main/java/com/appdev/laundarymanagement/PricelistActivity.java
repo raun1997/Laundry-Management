@@ -100,7 +100,7 @@ public class PricelistActivity extends AppCompatActivity {
 
     private void readDataFromGoogleSheet() {
         String spreadsheetId = "1myN4i5Nu7oTZqm9CrOyT4O7aQjJ7f8AcucQ1-MnmU4w";
-        String range = "Sheet2!A1:D100";
+        String range = "Sheet2!A:C";
         String apiKey = "AIzaSyAtB0JJF5JEcr3gCW6W_wz2AHgtBYhGBmk";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://sheets.googleapis.com/")
@@ -117,9 +117,9 @@ public class PricelistActivity extends AppCompatActivity {
                 System.out.println(response.toString());
                 ValueRange values = response.body();
                 List<List<Object>> rows = values.getValues();
-                a.add(new pricelistclass(rows.get(0).get(1).toString(),rows.get(0).get(2).toString(), (String) rows.get(0).get(3)));
+                a.add(new pricelistclass(rows.get(0).get(0).toString(),rows.get(0).get(1).toString(), (String) rows.get(0).get(2)));
                 for(int i=1;i<rows.size();i++){
-                        a.add(new pricelistclass(rows.get(i).get(1).toString(),rows.get(i).get(2).toString(), (String) rows.get(i).get(3)));
+                        a.add(new pricelistclass(rows.get(i).get(0).toString(),rows.get(i).get(1).toString(), (String) rows.get(i).get(2)));
                 }
                 CustomAdapter2 customAdapter=new CustomAdapter2(PricelistActivity.this,R.layout.pricelist_listview,a);
                 pb.setVisibility(View.GONE);

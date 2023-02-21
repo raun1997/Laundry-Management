@@ -93,7 +93,7 @@
         style="@style/OutlinedRoundedBox"
         android:layout_width="276dp"
         android:layout_height="58dp"
-        android:layout_marginBottom="220dp"
+        android:layout_marginBottom="140dp"
         android:backgroundTint="@color/white"
         app:boxBackgroundColor="@color/white"
         app:boxStrokeColor="@color/black"

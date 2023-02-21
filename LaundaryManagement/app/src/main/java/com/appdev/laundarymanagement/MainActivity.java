@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void readDataFromGoogleSheet() {
         String spreadsheetId = "1myN4i5Nu7oTZqm9CrOyT4O7aQjJ7f8AcucQ1-MnmU4w";
-        String range = "Sheet1!A1:I1000";
+        String range = "Sheet1!A:I";
         String apiKey = "AIzaSyAtB0JJF5JEcr3gCW6W_wz2AHgtBYhGBmk";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://sheets.googleapis.com/")
